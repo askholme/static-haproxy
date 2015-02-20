@@ -1,0 +1,11 @@
+--- Makefile	2015-02-01 07:54:32.000000000 +0100
++++ Makefile2	2015-02-21 06:07:11.340000000 +0100
+@@ -438,8 +438,6 @@
+ 
+ ifneq ($(USE_ZLIB),)
+ # Use ZLIB_INC and ZLIB_LIB to force path to zlib.h and libz.{a,so} if needed.
+-ZLIB_INC =
+-ZLIB_LIB =
+ OPTIONS_CFLAGS  += -DUSE_ZLIB $(if $(ZLIB_INC),-I$(ZLIB_INC))
+ BUILD_OPTIONS   += $(call ignore_implicit,USE_ZLIB)
+ OPTIONS_LDFLAGS += $(if $(ZLIB_LIB),-L$(ZLIB_LIB)) -lz
