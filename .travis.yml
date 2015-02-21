@@ -10,6 +10,11 @@ env:
     - HAPROXY_MINOR_VERSION=11
     - BINTRAY_REPO=static-software
     - PCK_NAME=haproxy
+cache:
+  directories:
+    - $TRAVIS_BUILD_DIR/openssl-$OPENSSL_VERSION
+    - $TRAVIS_BUILD_DIR/zlib-$ZLIB_VERSION
+    - $TRAVIS_BUILD_DIR/pcre-$PCRE_VERSION
 after_success:
   - "curl -X POST -u$BINTRAY_USER:$BINTRAY_API_KEY -H \"Content-Type: application/json\" -d \"{\\\"name\\\": \\\"$TRAVIS_JOB_NUMBER\\\", \\\"desc\\\":\\\"NGINX $NGINX_VERSION,PCRE $PCRE_VERSION, OpenSSL $OPENSSL_VERSION, ZLIB $ZLIB_VERSION \\\" }\" -v https://api.bintray.com/packages/$BINTRAY_USER/$BINTRAY_REPO/$PCK_NAME/versions 2>&1"
   - "curl -T $TRAVIS_BUILD_DIR/nginx.tar.gz -X PUT -u$BINTRAY_USER:$BINTRAY_API_KEY https://api.bintray.com/content/$BINTRAY_USER/$BINTRAY_REPO/$PCK_NAME/$TRAVIS_JOB_NUMBER/$TRAVIS_JOB_NUMBER/nginx.tar.gz?publish=1"
