@@ -82,4 +82,4 @@ Linked against
    Pcre ${PCRE_VERSION}
 See http://github.com/askholme/static-haproxy for more info
 EOF
-tar czf $TRAVIS_BUILD_DIR/haproxy.tar.gz .
+tar czf $TRAVIS_BUILD_DIR/$PCK_NAME.tar.gz .
