@@ -5,38 +5,42 @@ PCRE_TARBALL="pcre-${PCRE_VERSION}.tar.gz"
 OPENSSL_TARBALL="openssl-${OPENSSL_VERSION}.tar.gz"
 ZLIB_TARBALL="zlib-${ZLIB_VERSION}.tar.gz"
 HAPROXY_TARBALL="haproxy-${HAPROXY_VERSION}.tar.gz"
-#rm -rf haproxy*
-#rm -rf pcre*
-#rm -rf openssl*
-#rm -rf zlib*
-#if [[ -d "haproxy" ]]; then
-#  rm -rf haproxy
-#fi
+#GLIBC_TARBALL="glibc-${GLIBC_VERSION}.tar.gz"
+rm -rf haproxy-*
+rm -rf pcre-*
+rm -rf openssl-*
+rm -rf zlib-*
 CWD=$(pwd)
-DATE=`date +"%Y-%m-%d %H:%M:%S"`
-touch .timestamp
+# create a new file to set timestamp, we are not using touch since we need the filesystem to provide time (to handle remote FS)
+rm .timestamp || true
+cat "" > .timestamp
 if [[ ! -d "${PCRE_TARBALL%.tar.gz}" ]]; then
   wget "http://ftp.csx.cam.ac.uk/pub/software/programming/pcre/${PCRE_TARBALL}"
   tar --no-same-owner --mtime=.timestamp -xvzf "${PCRE_TARBALL}" && rm -f "${PCRE_TARBALL}"
-  find "${PCRE_TARBALL%.tar.gz}" -print0 |xargs -0 touch --date="$DATE"
+  find "${PCRE_TARBALL%.tar.gz}" -print0 |xargs -0 touch -r .timestamp
 fi
  
 if [[ ! -d "${OPENSSL_TARBALL%.tar.gz}" ]]; then
   wget "http://www.openssl.org/source/${OPENSSL_TARBALL}"
   tar --no-same-owner --mtime=.timestamp -xvzf "${OPENSSL_TARBALL}" && rm -f "${OPENSSL_TARBALL}"
-  find "${OPENSSL_TARBALL%.tar.gz}" -print0 |xargs -0 touch --date="$DATE"
+  find "${OPENSSL_TARBALL%.tar.gz}" -print0 |xargs -0 touch -r .timestamp
 fi
  
 if [[ ! -d "${ZLIB_TARBALL%.tar.gz}" ]]; then
   wget "http://zlib.net/${ZLIB_TARBALL}"
   tar --no-same-owner --mtime=.timestamp -xvzf "${ZLIB_TARBALL}" && rm -rf "${ZLIB_TARBALL}"
-  find "${ZLIB_TARBALL%.tar.gz}" -print0 |xargs -0 touch --date="$DATE"
+  find "${ZLIB_TARBALL%.tar.gz}" -print0 |xargs -0 touch -r .timestamp
 fi
 if [[ ! -d "${HAPROXY_TARBALL%.tar.gz}" ]]; then
   wget "http://www.haproxy.org/download/${HAPROXY_MAJOR_VERSION}/src/${HAPROXY_TARBALL}"
   tar --no-same-owner --mtime=.timestamp -zxvf "${HAPROXY_TARBALL}" && rm -rf "${HAPROXY_TARBALL}"
-  find "${HAPROXY_TARBALL%.tar.gz}" -print0 |xargs -0 touch --date="$DATE"
+  find "${HAPROXY_TARBALL%.tar.gz}" -print0 |xargs -0 touch -r .timestamp
 fi
+#if [[ ! -d "${GLIBC_TARBALL%.tar.gz}" ]]; then
+#  wget "http://ftp.download-by.net/gnu/gnu/libc/${GLIBC_TARBALL}"
+#  tar --no-same-owner -mtime=.timestamp -zvzf "${GLIBC_TARBALL}" && rm -rf "${GLIBC_TARBALL}"
+#  find "${GLIBC_TARBALL%.tar.gz}" -print0 |xargs -0 touch -r .timestamp
+#fi
 cd $CWD/openssl-${OPENSSL_VERSION}
 SSLDIR=$CWD/opensslbin
 mkdir -p $SSLDIR
@@ -53,17 +57,23 @@ cd $CWD/zlib-${ZLIB_VERSION}
 ./configure --static --prefix=$ZLIBDIR
 make && make install
 # patch makefile to allow ZLIBPATHS
+#GLIBCDIR=$CWD/glibcbin
+#mkdir -p $GLIBCDIR
+#mkdir -p $CWD/glibcbuild
+#cd $CWD/glibcbuild
+#$CWD/glibc-${GLIBC_VERSION}/configure --prefix=$GLIBCDIR --enable-static-nss
+#make && make install
 mkdir -p $CWD/bin
 cd $CWD/haproxy-${HAPROXY_VERSION}
 patch -p0 Makefile < $CWD/haproxy_makefile.patch
-sed -s 's#PREFIX = /usr/local#PREFIX = $CWD/bin#g' Makefile > Makefile
+sed -ibak "s#PREFIX = /usr/local#PREFIX = $CWD/bin#g" Makefile
 make TARGET=linux2628 USE_STATIC_PCRE=1 USE_ZLIB=1 USE_OPENSSL=1 ZLIB_LIB=$ZLIBDIR/lib ZLIB_INC=$ZLIBDIR/include SSL_INC=$SSLDIR/include SSL_LIB=$SSLDIR/lib ADDLIB=-ldl -lzlib PCREDIR=$PCREDIR 
 make install
 cd $CWD/bin
-cp $CWD/zlib-${ZLIB_VERSION}/README .
-cp $CWD/openssl-${OPENSSL_VERSION}/LICENSE
-cp $CWD/pcre-${PCRE_VERSION}/LICENCE .
-cp $CWD/haproxy-${HAPROXY_VERSION}/LICENSE .
+cp $CWD/zlib-${ZLIB_VERSION}/README ZLIB-LICENSE
+cp $CWD/openssl-${OPENSSL_VERSION}/LICENSE OpenSSL-License
+cp $CWD/pcre-${PCRE_VERSION}/LICENCE PCRE-LICENSE
+cp $CWD/haproxy-${HAPROXY_VERSION}/LICENSE HAPROXY-LICENSE
 cat << EOF > README
 Statically linked haproxy for production use.
 Linked against
