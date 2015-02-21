@@ -56,7 +56,7 @@ make && make install
 mkdir -p $CWD/bin
 cd $CWD/haproxy-${HAPROXY_VERSION}
 patch -p0 Makefile < $CWD/haproxy_makefile.patch
-sed -s 's#PREFIX = /usr/local#PREFIX = $CWD/bin#g'
+sed -s 's#PREFIX = /usr/local#PREFIX = $CWD/bin#g' Makefile > Makefile
 make TARGET=linux2628 USE_STATIC_PCRE=1 USE_ZLIB=1 USE_OPENSSL=1 ZLIB_LIB=$ZLIBDIR/lib ZLIB_INC=$ZLIBDIR/include SSL_INC=$SSLDIR/include SSL_LIB=$SSLDIR/lib ADDLIB=-ldl -lzlib PCREDIR=$PCREDIR 
 make install
 cd $CWD/bin
