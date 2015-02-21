@@ -6,8 +6,8 @@ env:
     - PCRE_VERSION=8.36
     - OPENSSL_VERSION=1.0.1l
     - ZLIB_VERSION=1.2.8
-    - HAPROXY_MAJOR=1.5
-    - HAPROXY_MINOR=11
+    - HAPROXY_MAJOR_VERSION=1.5
+    - HAPROXY_MINOR_VERSION=11
     - BINTRAY_REPO=static-software
     - PCK_NAME=haproxy
 after_success:

@@ -5,13 +5,13 @@ PCRE_TARBALL="pcre-${PCRE_VERSION}.tar.gz"
 OPENSSL_TARBALL="openssl-${OPENSSL_VERSION}.tar.gz"
 ZLIB_TARBALL="zlib-${ZLIB_VERSION}.tar.gz"
 HAPROXY_TARBALL="haproxy-${HAPROXY_VERSION}.tar.gz"
-rm -rf haproxy*
-rm -rf pcre*
-rm -rf openssl*
-rm -rf zlib*
-if [[ -d "haproxy" ]]; then
-  rm -rf haproxy
-fi
+#rm -rf haproxy*
+#rm -rf pcre*
+#rm -rf openssl*
+#rm -rf zlib*
+#if [[ -d "haproxy" ]]; then
+#  rm -rf haproxy
+#fi
 CWD=$(pwd)
 DATE=`date +"%Y-%m-%d %H:%M:%S"`
 touch .timestamp
